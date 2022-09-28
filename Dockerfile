@@ -29,7 +29,7 @@ RUN git clone -b v0.2.2 https://github.com/holgerjh/genjsonschema-cli.git /genjs
 WORKDIR /genjsonschema
 RUN CGO_ENABLED=0 go build
 
-FROM alpine:3.16.2
+FROM alpine:3.16.2 as final
 ARG ARCH="amd64"
 RUN apk add --no-cache \
       curl==7.83.1-r3 \
