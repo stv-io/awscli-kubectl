@@ -1,10 +1,10 @@
-name: Build and publish docker images
+name: Build and publish multi-arch docker image
 
 on:
   # push:
   #   branches: [ master ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
