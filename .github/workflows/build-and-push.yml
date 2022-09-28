@@ -4,6 +4,8 @@ on:
   pull_request:
     branches: [ main ]
 
+# Consider https://github.com/marketplace/actions/kaniko-builder
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -68,23 +70,23 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}          
 
 
-      - name: Build second
+      - name: Build awscli-builder
         uses: docker/build-push-action@ac9327eae2b366085ac7f6a2d02df8aa8ead720a
         with:
           context: .
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: false
-          target: second
+          target: awscli-builder
 
-      - name: Build third
+      - name: Build genjsonschema-builder
         uses: docker/build-push-action@ac9327eae2b366085ac7f6a2d02df8aa8ead720a
         with:
           context: .
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: false
-          target: third
+          target: genjsonschema-builder
 
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
