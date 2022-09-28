@@ -54,4 +54,21 @@ COPY --from=genjsonschema-builder /genjsonschema/genjsonschema-cli /root/.local/
 COPY --from=awscli-builder /usr/local/aws-cli/ /usr/local/aws-cli/
 COPY --from=awscli-builder /aws-cli-bin/ /usr/local/bin/
 
+ENV USER=user
+ENV GROUP=user
+ENV UID=12345
+ENV GID=23456
+
+RUN addgroup -S -g "$GID" "$GROUP" \
+ && adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/home/$USER" \
+    --ingroup "$USER" \
+    --uid "$UID" \
+    "$USER"
+
+USER $USER
+WORKDIR $HOME
+
 ENTRYPOINT [ "bash" ]
