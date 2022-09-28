@@ -6,18 +6,30 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/checkout@v2 
-      - uses: hadolint/hadolint-action@v2.0.0
+      - name: Hadolint Dockerfile Linter
+      - uses: hadolint/hadolint-action@f988afea3da57ee48710a9795b6bb677cc901183
         with:
           dockerfile: Dockerfile
+          format: sarif
+          output-file: hadolint-results.sarif
 
-      - name: Update Pull Request
+      - name: Upload analysis results to GitHub
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: hadolint-results.sarif
+          wait-for-processing: true
+
+      - name: Update Pull Request with Hadolint Report
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         with:
@@ -36,15 +48,6 @@ jobs:
               body: output
             })
 
-      - name: Define tags
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            ghcr.io/stv-io/awscli-kubectl
-          tags: |
-            type=sha
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
@@ -52,16 +55,28 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Build and push
-        uses: docker/build-push-action@v3.0.0
+
+      # Extract metadata (tags, labels) for Docker
+      # https://github.com/docker/metadata-action
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}          
+
+      # https://github.com/docker/build-push-action
+      - name: Build and push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@ac9327eae2b366085ac7f6a2d02df8aa8ead720a
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          push: true
           tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
