@@ -42,6 +42,7 @@ RUN apk add --no-cache \
       git-crypt==0.6.0-r2 \
       openssh-client==9.0_p1-r2 \
       bash==5.1.16-r2 \
+      font-fira-code-nerd==2.1.0-r9 \
       starship==1.6.3-r0 \
       bash-completion==2.11-r4 \
     && curl -sLO https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${ARCH}/kubectl \
@@ -51,13 +52,16 @@ RUN apk add --no-cache \
     && tar -xvzf helm-${HELM_VERSION}-linux-${ARCH}.tar.gz \
     && mv linux-${ARCH}/helm /usr/bin/helm \
     && chmod +x /usr/bin/helm \
-    && rm -rf linux-${ARCH} \
+    && rm -rvf helm-${HELM_VERSION}-linux-${ARCH}.tar.gz \    
+    && rm -rvf linux-${ARCH} \
     && helm plugin install https://github.com/quintush/helm-unittest --version v0.2.9 \
     && helm plugin install https://github.com/holgerjh/helm-schema --version v0.2.0 \
     && curl -sLO https://github.com/mikefarah/yq/releases/download/v4.28.2/yq_linux_${ARCH} \
     && mv yq_linux_${ARCH} /usr/bin/yq && chmod +x /usr/bin/yq \
     && curl -sLo kubie https://github.com/sbstp/kubie/releases/download/v0.19.0/kubie-linux-${ARCH} \
-    && chmod +x kubie && mv kubie /usr/bin/kubie
+    && chmod +x kubie && mv kubie /usr/bin/kubie \
+    && curl -sLo infracost.tar.gz https://github.com/infracost/infracost/releases/download/v0.10.13/infracost-linux-${ARCH}.tar.gz \
+    && tar -xvzf infracost.tar.gz && chmod +x infracost-linux-${ARCH} && mv infracost-linux-${ARCH} /usr/bin/infracost
 
 COPY --from=genjsonschema-builder /genjsonschema/genjsonschema-cli /root/.local/share/helm/plugins/helm-schema/genjsonschema-cli
 COPY --from=awscli-builder /usr/local/aws-cli/ /usr/local/aws-cli/
