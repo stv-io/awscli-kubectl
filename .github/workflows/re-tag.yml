@@ -10,13 +10,37 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set variable from filee
+      - name : machine echo env
+        env : { CONTENT : "${{ toJson(env) }}" }
+        run : "echo $CONTENT"
+      - name : machine echo github
+        env : { CONTENT : "${{ toJson(github) }}" }
+        run : "echo $CONTENT"
+      - name : machine echo runner
+        env : { CONTENT : "${{ toJson(runner) }}" }
+        run : "echo $CONTENT"
+      - name : machine echo job
+        env : { CONTENT : "${{ toJson(job) }}" }
+        run : "echo $CONTENT"
+      - name : machine echo strategy
+        env : { CONTENT : "${{ toJson(strategy) }}" }
+        run : "echo $CONTENT"
+      - name : machine echo matrix
+        env : { CONTENT : "${{ toJson(matrix) }}" }
+        run : "echo $CONTENT"
+      - name : machine echo steps
+        env : { CONTENT : "${{ toJson(steps) }}" }
+        run : "echo $CONTENT"
+
+      - name: Set variable from file
         run: |
           VER=$(cat VERSION)
           echo "VERSION=$VER" >> $GITHUB_ENV
+          echo "$VER"
 
-      - name: "Skopeo promote"
-        run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | skopeo login ghcr.io -u stv-io --password-stdin
-          echo "Promoting built image to release"
-          skopeo copy docker://ghcr.io/stv-io/awscli-kubectl/awscli-kubectl:${{ github.event.push.head_commit.id }} docker://ghcr.io/stv-io/awscli-kubectl/awscli-kubectl:${VERSION}
+      # - name: "Skopeo promote"
+      #   run: |
+      #     echo "DEBUG Version $VERSION"
+      #     echo ${{ secrets.GITHUB_TOKEN }} | skopeo login ghcr.io -u stv-io --password-stdin
+      #     echo "Promoting built image to release"
+      #     skopeo copy docker://ghcr.io/stv-io/awscli-kubectl/awscli-kubectl:${{ github.event.push.head_commit.id }} docker://ghcr.io/stv-io/awscli-kubectl/awscli-kubectl:${VERSION}
