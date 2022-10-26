@@ -70,6 +70,8 @@ ENV UID=12345
 ENV GID=23456
 ENV HELM_REPOSITORY_CACHE="/home/$USER/.helm/cache"
 
+COPY .bashrc /home/$USER/.bashrc
+
 RUN addgroup -S -g "$GID" "$GROUP" \
  && adduser \
     --disabled-password \
