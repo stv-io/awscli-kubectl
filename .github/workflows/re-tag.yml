@@ -1,0 +1,20 @@
+name: Build and publish multi-arch docker image
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set variable from filee
+        run: |
+          VER=$(cat VERSION)
+          echo "VERSION=$VER" >> $GITHUB_ENV
+
+      - name: "Skopeo promote"
+        run: |    
+          echo ${{ secrets.GITHUB_TOKEN }} | skopeo login ghcr.io -u stv-io --password-stdin
+          echo "Promoting built image to release"
+          skopeo copy docker://ghcr.io/stv-io/awscli-kubectl/awscli-kubectl:${{ github.event.push.head_commit.id }} docker://ghcr.io/stv-io/awscli-kubectl/awscli-kubectl:${VERSION}
