@@ -38,9 +38,9 @@ jobs:
           echo "VERSION=$VER" >> $GITHUB_ENV
           echo "$VER"
 
-      - name: "Skopeo promote"
-        run: |
-          echo "DEBUG Version $VERSION"
-          echo ${{ secrets.GITHUB_TOKEN }} | skopeo login ghcr.io -u stv-io --password-stdin
-          echo "Promoting built image to release"
-          skopeo copy docker://ghcr.io/stv-io/awscli-kubectl/awscli-kubectl:${{ github.event.push.head_commit.id }} docker://ghcr.io/stv-io/awscli-kubectl/awscli-kubectl:${VERSION}
+      # - name: "Skopeo promote"
+      #   run: |
+      #     echo "DEBUG Version $VERSION"
+      #     echo ${{ secrets.GITHUB_TOKEN }} | skopeo login ghcr.io -u stv-io --password-stdin
+      #     echo "Promoting built image to release"
+      #     skopeo copy docker://ghcr.io/stv-io/awscli-kubectl/awscli-kubectl:${{ github.event.push.head_commit.id }} docker://ghcr.io/stv-io/awscli-kubectl/awscli-kubectl:${VERSION}
