@@ -42,6 +42,8 @@ RUN apk add --no-cache \
       git-crypt==0.6.0-r2 \
       openssh-client==9.0_p1-r2 \
       bash==5.1.16-r2 \
+      starship==1.6.3-r0 \
+      bash-completion==2.11-r4 \
     && curl -sLO https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${ARCH}/kubectl \
     && mv kubectl /usr/bin/kubectl \
     && chmod +x /usr/bin/kubectl \
@@ -53,7 +55,9 @@ RUN apk add --no-cache \
     && helm plugin install https://github.com/quintush/helm-unittest --version v0.2.9 \
     && helm plugin install https://github.com/holgerjh/helm-schema --version v0.2.0 \
     && curl -sLO https://github.com/mikefarah/yq/releases/download/v4.28.2/yq_linux_${ARCH} \
-    && mv yq_linux_${ARCH} /usr/bin/yq && chmod +x /usr/bin/yq
+    && mv yq_linux_${ARCH} /usr/bin/yq && chmod +x /usr/bin/yq \
+    && curl -sLo kubie https://github.com/sbstp/kubie/releases/download/v0.19.0/kubie-linux-${ARCH} \
+    && chmod +x kubie && mv kubie /usr/bin/kubie
 
 COPY --from=genjsonschema-builder /genjsonschema/genjsonschema-cli /root/.local/share/helm/plugins/helm-schema/genjsonschema-cli
 COPY --from=awscli-builder /usr/local/aws-cli/ /usr/local/aws-cli/
@@ -78,7 +82,12 @@ RUN addgroup -S -g "$GID" "$GROUP" \
     --ingroup "$USER" \
     --uid "$UID" \
     "$USER" \
-  && mkdir -p "/home/$USER/.helm/cache"
+  && mkdir -p "/home/$USER/.helm/cache" \
+  && mkdir -p "/home/$USER/.config"
+
+COPY starship.toml /home/$USER/.config/starship.toml
+
+RUN chown -R $USER:$USER "/home/$USER"
 
 USER $USER
 WORKDIR $HOME
