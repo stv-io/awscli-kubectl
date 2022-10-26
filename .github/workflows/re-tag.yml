@@ -1,46 +1,26 @@
-name: Build and publish multi-arch docker image
+name: Re-tag and copy to released version
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  build:
+  promote:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - name : machine echo env
-        env : { CONTENT : "${{ toJson(env) }}" }
-        run : "echo $CONTENT"
-      - name : machine echo github
-        env : { CONTENT : "${{ toJson(github) }}" }
-        run : "echo $CONTENT"
-      - name : machine echo runner
-        env : { CONTENT : "${{ toJson(runner) }}" }
-        run : "echo $CONTENT"
-      - name : machine echo job
-        env : { CONTENT : "${{ toJson(job) }}" }
-        run : "echo $CONTENT"
-      - name : machine echo strategy
-        env : { CONTENT : "${{ toJson(strategy) }}" }
-        run : "echo $CONTENT"
-      - name : machine echo matrix
-        env : { CONTENT : "${{ toJson(matrix) }}" }
-        run : "echo $CONTENT"
-      - name : machine echo steps
-        env : { CONTENT : "${{ toJson(steps) }}" }
-        run : "echo $CONTENT"
-
-      - name: Set variable from file
+      - name: Set variables from file
         run: |
           VER=$(cat VERSION)
           echo "VERSION=$VER" >> $GITHUB_ENV
           echo "$VER"
+          PR_NUM=$(git --no-pager log --pretty=oneline  | grep "#" | head -n 1  | awk -F '#' '{print $2}' | awk '{print $1}' | tr -d '(#)')
+          CONTAINER_TAG=(gh pr view $PR_NUM --json commits | jq -r .commits[].oid | tail -n 1)
 
-      # - name: "Skopeo promote"
-      #   run: |
-      #     echo "DEBUG Version $VERSION"
-      #     echo ${{ secrets.GITHUB_TOKEN }} | skopeo login ghcr.io -u stv-io --password-stdin
-      #     echo "Promoting built image to release"
-      #     skopeo copy docker://ghcr.io/stv-io/awscli-kubectl/awscli-kubectl:${{ github.event.push.head_commit.id }} docker://ghcr.io/stv-io/awscli-kubectl/awscli-kubectl:${VERSION}
+      - name: "Skopeo promote previous PR's build"
+        run: |
+          echo "DEBUG Version $VERSION"
+          echo ${{ secrets.GITHUB_TOKEN }} | skopeo login ghcr.io -u stv-io --password-stdin
+          echo "Promoting built image to release"
+          skopeo copy docker://ghcr.io/stv-io/awscli-kubectl/awscli-kubectl:${CONTAINER_TAG} docker://ghcr.io/stv-io/awscli-kubectl/awscli-kubectl:${VERSION}
