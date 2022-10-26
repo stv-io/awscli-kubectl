@@ -2,8 +2,6 @@ ARG ALPINE_VERSION=3.16
 FROM python:3.10.8-alpine${ALPINE_VERSION} as awscli-builder
 
 ARG AWS_CLI_VERSION=2.7.20
-# ARG AWS_CLI_VERSION=2.7.35
-# ARG AWS_CLI_VERSION=2.8.5
 RUN apk add --no-cache git==2.36.3-r0 \
     unzip==6.0-r9 \
     groff==1.22.4-r1 \
@@ -38,7 +36,7 @@ ARG ARCH="amd64"
 ARG HELM_VERSION="v3.10.1"
 ARG KUBECTL_VERSION="v1.23.12"
 RUN apk add --no-cache \
-      curl==7.83.1-r3 \
+      curl==7.83.1-r4 \
       jq==1.6-r1 \
       git==2.36.3-r0 \
       git-crypt==0.6.0-r2 \
