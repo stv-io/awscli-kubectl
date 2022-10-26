@@ -17,6 +17,7 @@ jobs:
           VER=$(cat VERSION)
           echo "VERSION=$VER" >> $GITHUB_ENV
           echo "$VER"
+          git --no-pager log --pretty=oneline
           PR_NUM=$(git --no-pager log --pretty=oneline  | grep "#" | head -n 1  | awk -F '#' '{print $2}' | awk '{print $1}' | tr -d '(#)')
           echo "PR_NUM $PR_NUM"
           CONTAINER_TAG=$(gh pr view $PR_NUM --json commits | jq -r '.commits[-1].oid')
