@@ -15,14 +15,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VER=$(cat VERSION)
-          echo "VERSION=$VER" >> $GITHUB_ENV
+          VERSION=$(cat VERSION)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "$VER"
           git --no-pager log --pretty=oneline
           PR_NUM=$(git --no-pager log --pretty=oneline  | grep "#" | head -n 1  | awk -F '#' '{print $2}' | awk '{print $1}' | tr -d '(#)')
           echo "PR_NUM $PR_NUM"
           CONTAINER_TAG=$(gh pr view $PR_NUM --json commits | jq -r '.commits[-1].oid')
           echo "CONTAINER_TAG $CONTAINER_TAG"
+          echo "CONTAINER_TAG=$CONTAINER_TAG" >> $GITHUB_ENV
+
 
       - name: "Skopeo promote previous PR's build"
         run: |
