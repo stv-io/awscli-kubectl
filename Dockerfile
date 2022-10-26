@@ -35,6 +35,8 @@ FROM alpine:3.16.2 as final
 ARG ARCH="amd64"
 ARG HELM_VERSION="v3.10.1"
 ARG KUBECTL_VERSION="v1.23.12"
+ARG KUBIE_VERSION="v0.19.0"
+ARG INFRACOST_VERSION="v0.19.0"
 RUN apk add --no-cache \
       curl==7.83.1-r4 \
       jq==1.6-r1 \
@@ -42,7 +44,6 @@ RUN apk add --no-cache \
       git-crypt==0.6.0-r2 \
       openssh-client==9.0_p1-r2 \
       bash==5.1.16-r2 \
-      font-fira-code-nerd==2.1.0-r9 \
       starship==1.6.3-r0 \
       bash-completion==2.11-r4 \
     && curl -sLO https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${ARCH}/kubectl \
@@ -58,9 +59,9 @@ RUN apk add --no-cache \
     && helm plugin install https://github.com/holgerjh/helm-schema --version v0.2.0 \
     && curl -sLO https://github.com/mikefarah/yq/releases/download/v4.28.2/yq_linux_${ARCH} \
     && mv yq_linux_${ARCH} /usr/bin/yq && chmod +x /usr/bin/yq \
-    && curl -sLo kubie https://github.com/sbstp/kubie/releases/download/v0.19.0/kubie-linux-${ARCH} \
+    && curl -sLo kubie https://github.com/sbstp/kubie/releases/download/${KUBIE_VERSION}/kubie-linux-${ARCH} \
     && chmod +x kubie && mv kubie /usr/bin/kubie \
-    && curl -sLo infracost.tar.gz https://github.com/infracost/infracost/releases/download/v0.10.13/infracost-linux-${ARCH}.tar.gz \
+    && curl -sLo infracost.tar.gz https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}/infracost-linux-${ARCH}.tar.gz \
     && tar -xvzf infracost.tar.gz && chmod +x infracost-linux-${ARCH} && mv infracost-linux-${ARCH} /usr/bin/infracost
 
 COPY --from=genjsonschema-builder /genjsonschema/genjsonschema-cli /root/.local/share/helm/plugins/helm-schema/genjsonschema-cli
