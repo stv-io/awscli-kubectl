@@ -60,14 +60,23 @@ jobs:
         password: ${{ secrets.github_token }}
 
     steps:
-      - name: nginx version
-        run: nginx -v
+      - name: terraform version
+        run: terraform version
+
+      - name: terragrunt version
+        run: terragrunt -v
 
       - name: kubectl version
-        run: which ls
+        run: kubectl version --output=json
 
-      # - name: terraform version
-      #   run: terraform version
+      - name: helm version
+        run: helm version
 
-      # - name: kubectl version
-      #   run: kubectl version --output=json
+      - name: aws version
+        run: aws --version
+
+      - name: kubie version
+        run: kubie -V
+
+      - name: yq version
+        run: yq -V
