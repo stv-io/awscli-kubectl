@@ -46,6 +46,7 @@ RUN apk add --no-cache \
       bash==5.1.16-r2 \
       starship==1.6.3-r0 \
       bash-completion==2.11-r4 \
+      delta==0.13.0-r0 \
     && curl -sLO https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${ARCH}/kubectl \
     && mv kubectl /usr/bin/kubectl \
     && chmod +x /usr/bin/kubectl \
@@ -90,7 +91,7 @@ RUN addgroup -S -g "$GID" "$GROUP" \
   && mkdir -p "/home/$USER/.helm/cache" \
   && mkdir -p "/home/$USER/.config"
 
-COPY starship.toml /home/$USER/.config/starship.toml
+COPY .gitconfig /home/$USER/.gitconfig
 
 RUN chown -R $USER:$USER "/home/$USER"
 
