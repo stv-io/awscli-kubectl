@@ -91,8 +91,6 @@ RUN addgroup -S -g "$GID" "$GROUP" \
   && mkdir -p "/home/$USER/.helm/cache" \
   && mkdir -p "/home/$USER/.config"
 
-COPY .gitconfig /home/$USER/.gitconfig
-
 RUN chown -R $USER:$USER "/home/$USER"
 
 USER $USER

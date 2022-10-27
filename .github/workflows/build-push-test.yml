@@ -67,7 +67,7 @@ jobs:
         run: terragrunt -v
 
       - name: kubectl version
-        run: kubectl version --output=json
+        run: kubectl version --client=true --output=json
 
       - name: helm version
         run: helm version
