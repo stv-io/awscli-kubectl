@@ -1,4 +1,4 @@
-name: Build and publish multi-arch docker image
+name: Build and publish container image
 
 on:
   pull_request:
@@ -49,3 +49,34 @@ jobs:
           registry: ghcr.io
           password: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.event.pull_request.head.sha }}
+
+  testing:  
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/stv-io/awscli-kubectl/awscli-kubectl:${{ github.event.pull_request.head.sha }} 
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
+
+    steps:
+      - name: terraform version
+        run: terraform version
+
+      - name: terragrunt version
+        run: terragrunt -v
+
+      - name: kubectl version
+        run: kubectl version --client=true --output=json
+
+      - name: helm version
+        run: helm version
+
+      - name: aws version
+        run: aws --version
+
+      - name: kubie version
+        run: kubie -V
+
+      - name: yq version
+        run: yq -V
